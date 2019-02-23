@@ -3,7 +3,20 @@ export let config = {
         width: 900,
         height: 500
     },
-    game: {}
+    game: {
+        spellBox: {
+            font: "Arial",
+            fontSize: 30,
+            boxSize: 45,
+            widthPercent: 60,
+            verticalOffset: 30,
+            textPadding: 5,
+            backgroundColor: "#f4f4f4",
+            foregroundColor: "#757a82",
+            autocompleteBackgroundColor: "#7c796b",
+            autocompleteForegroundColor: "#eaeaea"
+        }
+    }
 }
 
 export type Config = {
@@ -14,4 +27,17 @@ export type Config = {
     game: GameConfig
 }
 
-export type GameConfig = {}
+export type GameConfig = {
+    spellBox: {
+        font: string,
+        fontSize: number,
+        boxSize: number,
+        widthPercent: number,
+        verticalOffset: number,
+        textPadding: number,
+        backgroundColor: string,
+        foregroundColor: string,
+        autocompleteBackgroundColor: string,
+        autocompleteForegroundColor: string
+    }
+}
