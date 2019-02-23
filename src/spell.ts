@@ -1,4 +1,4 @@
 export default interface Spell {
     name: string
-    execute(): void
+    execute(n: number): boolean
 }

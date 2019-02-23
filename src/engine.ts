@@ -16,22 +16,13 @@ export default function start(game: Game, config: Config) {
     }, false)
 
     // start the game loop
-    let now, dt, last = timestamp()
     requestAnimationFrame(function frame() {
-        now = timestamp()
-        dt = Math.min(1, (now - last) / 1000)
         try {
-            game.update(dt)
+            game.update()
             game.render(canvas, ctx)
         } catch (e) {
             alert(e.stack)
         }
-        last = now
         requestAnimationFrame(frame)
     })
-}
-
-// browser independent timestamp function used to get the delta time in the game loop
-function timestamp() {
-    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime()
 }

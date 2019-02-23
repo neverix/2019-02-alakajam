@@ -15,6 +15,11 @@ export let config = {
             foregroundColor: "#757a82",
             autocompleteBackgroundColor: "#7c796b",
             autocompleteForegroundColor: "#eaeaea"
+        },
+        player: {
+            size: 40,
+            moveSpeed: 50,
+            moveDuration: 3
         }
     }
 }
@@ -39,5 +44,10 @@ export type GameConfig = {
         foregroundColor: string,
         autocompleteBackgroundColor: string,
         autocompleteForegroundColor: string
+    },
+    player: {
+        size: number,
+        moveSpeed: number,
+        moveDuration: number
     }
 }
