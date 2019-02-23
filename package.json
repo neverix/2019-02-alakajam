@@ -1,0 +1,19 @@
+{
+  "name": "2019-02-alakajam",
+  "version": "1.0.0",
+  "description": "Alakajam game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neverix/2019-02-alakajam.git"
+  },
+  "author": "neverix",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neverix/2019-02-alakajam/issues"
+  },
+  "homepage": "https://github.com/neverix/2019-02-alakajam#readme"
+}
