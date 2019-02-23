@@ -4,8 +4,8 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/,
-                use: 'babel-loader',
+                test: /\.ts$/,
+                use: 'ts-loader',
                 exclude: /node_modules/
             },
             {
@@ -24,5 +24,11 @@ module.exports = {
             filename: "./index.html"
         })
     ],
-    entry: "./src/index.js"
+    resolve: {
+        extensions: [
+            ".js",
+            ".ts"
+        ]
+    },
+    entry: "./src/index.ts"
 };
