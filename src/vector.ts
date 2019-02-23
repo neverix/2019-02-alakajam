@@ -2,7 +2,7 @@ export default class Vector {
     x: number
     y: number
 
-    constructor(x: number, y: number) {
+    constructor(x: number = 0, y: number = 0) {
         this.x = x
         this.y = y
     }
@@ -24,11 +24,13 @@ export default class Vector {
         return new Vector(this.x / other, this.y / other)
     }
 
-    len() {
+    get len() {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2))
     }
 
     norm() {
-        return this.div(this.len())
+        let len = this.len
+        if (len == 0) return new Vector(0, 0)
+        return this.div(this.len)
     }
 }

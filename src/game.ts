@@ -16,7 +16,8 @@ export class Game {
     private spellQueue: { duration: number, spell: Spell }[] = []
     // list of all spells
     private spells: Spell[] = []
-
+    // camera postion
+    private cameraPosition: Vector = new Vector()
 
     constructor(config: GameConfig) {
         this.config = config
@@ -113,6 +114,13 @@ export class Game {
                 return false
             }
         })
+        // shift camera 
+        this.cameraPosition =
+            this.cameraPosition.add(
+                this.playerPosition
+                    .sub(this.cameraPosition)
+                    .norm()
+                    .mul(this.config.camera.moveSpeed))
     }
 
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
@@ -126,8 +134,8 @@ export class Game {
         // player
         ctx.fillStyle = "#9a5bff"
         ctx.arc(
-            canvas.width / 2 + this.playerPosition.x,
-            canvas.height / 2 + this.playerPosition.y,
+            canvas.width / 2 + this.playerPosition.x - this.cameraPosition.x,
+            canvas.height / 2 + this.playerPosition.y - this.cameraPosition.y,
             this.config.player.size,
             0,
             Math.PI * 2)
@@ -158,7 +166,7 @@ export class Game {
 
             // autocompletion
             this.spells.filter(spell =>
-                new RegExp(`.*${this.spell.join('.*').toLowerCase()}.*`).test(spell.name)).forEach(
+                new RegExp(this.spell.join('.*').toLowerCase()).test(spell.name)).forEach(
                     (spell, index) => {
                         let complX = boxX
                         let complY = boxY + (index + 1) * this.config.spellBox.boxSize

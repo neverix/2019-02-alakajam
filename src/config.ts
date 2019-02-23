@@ -18,8 +18,11 @@ export let config = {
         },
         player: {
             size: 40,
-            moveSpeed: 50,
+            moveSpeed: 30,
             moveDuration: 3
+        },
+        camera: {
+            moveSpeed: 10
         }
     }
 }
@@ -49,5 +52,8 @@ export type GameConfig = {
         size: number,
         moveSpeed: number,
         moveDuration: number
+    },
+    camera: {
+        moveSpeed: number
     }
 }
