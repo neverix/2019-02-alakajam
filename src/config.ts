@@ -17,12 +17,17 @@ export let config = {
             autocompleteForegroundColor: "#eaeaea"
         },
         player: {
-            size: 40,
-            moveSpeed: 30,
+            size: 20,
+            picSize: 1,
+            moveSpeed: 20,
             moveDuration: 3
         },
         camera: {
             moveSpeed: 10
+        },
+        collectibles: {
+            size: 10,
+            picSize: 1
         }
     }
 }
@@ -50,10 +55,15 @@ export type GameConfig = {
     },
     player: {
         size: number,
+        picSize: number,
         moveSpeed: number,
         moveDuration: number
     },
     camera: {
         moveSpeed: number
+    },
+    collectibles: {
+        size: number,
+        picSize: number
     }
 }

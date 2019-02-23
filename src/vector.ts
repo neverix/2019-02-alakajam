@@ -28,8 +28,11 @@ export default class Vector {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2))
     }
 
+    // normalize
     norm() {
+        // cache length
         let len = this.len
+        // check for zero division
         if (len == 0) return new Vector(0, 0)
         return this.div(this.len)
     }

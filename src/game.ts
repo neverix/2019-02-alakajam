@@ -1,6 +1,7 @@
 import { GameConfig, config } from './config'
 import Spell from './spell'
-import Vector from './vector';
+import Vector from './vector'
+import Collectible from './collectible'
 
 export class Game {
     // game config
@@ -12,12 +13,14 @@ export class Game {
     private charactersTypedPreviousFrames: number = 0
     // player position
     private playerPosition: Vector = new Vector(0, 0)
-    // currently executing spells
+    // list of currently executing spells
     private spellQueue: { duration: number, spell: Spell }[] = []
     // list of all spells
     private spells: Spell[] = []
     // camera postion
     private cameraPosition: Vector = new Vector()
+    // list of collectibles
+    private collectibles: Collectible[] = []
 
     constructor(config: GameConfig) {
         this.config = config
@@ -55,6 +58,18 @@ export class Game {
                 execute: spell.execute
             }
         })
+
+        // generate collectibles
+        // TODO
+        this.collectibles = [
+            new Collectible(new Vector(200, 0), {
+                name: "atbge",
+                execute: (n) => {
+                    alert("ATBGE")
+                    return false
+                }
+            })
+        ]
     }
 
     update() {
@@ -104,15 +119,20 @@ export class Game {
         // the characters typed so far are now considered to be in the previous frames.
         this.charactersTypedPreviousFrames = this.spell.length
         // execute all spells
-        let queuedSpellsQueuedForDeletion: number[] = []
-        this.spellQueue.filter((queuedSpell, index) => {
+        this.spellQueue = this.spellQueue.filter(queuedSpell => {
             if (queuedSpell.spell.execute(queuedSpell.duration)) {
                 queuedSpell.duration++
                 return true
-            } else {
-                queuedSpellsQueuedForDeletion.push(index)
-                return false
             }
+            return false
+        })
+        // check for collisions with collectibles
+        this.collectibles = this.collectibles.filter(collectible => {
+            if (this.playerPosition.sub(collectible.position).len
+                > this.config.player.picSize * this.config.player.size
+                + this.config.collectibles.picSize * this.config.collectibles.size)
+                return true
+            this.spells.push(collectible.spell)
         })
         // shift camera 
         this.cameraPosition =
@@ -131,6 +151,18 @@ export class Game {
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         ctx.beginPath()
+        // collectibles
+        ctx.fillStyle = "#f4c242"
+        this.collectibles.forEach(collectible => {
+            ctx.arc(
+                canvas.width / 2 + collectible.position.x - this.cameraPosition.x,
+                canvas.height / 2 + collectible.position.y - this.cameraPosition.y,
+                this.config.collectibles.size,
+                0,
+                Math.PI * 2)
+            ctx.fill()
+            ctx.beginPath()
+        })
         // player
         ctx.fillStyle = "#9a5bff"
         ctx.arc(
@@ -142,7 +174,6 @@ export class Game {
         ctx.fill()
         // spell
         if (this.textSpell != "") {
-            // spell
             // box
             let boxX = canvas.width / 2
                 - canvas.width * this.config.spellBox.widthPercent / 100 / 2
@@ -196,6 +227,7 @@ export class Game {
         return this.spell.reduce((currentSpell, spellKey) => currentSpell + spellKey, "")
     }
 
+    // keypress handler
     handleKey(keyCode: KeyboardEvent) {
         // add the character to the current spell
         this.spell.push(keyCode.key)
