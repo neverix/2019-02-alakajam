@@ -29,19 +29,20 @@ export let config = {
         collectibles: {
             size: 12, // scale of the picture
             picSize: 1, // original picture size
-            minNumber: 10, // smallest number of collectibles
-            maxNumber: 15 // biggest number of collectibles (inclusive)
+            minNumber: 500, // smallest number of collectibles
+            maxNumber: 900 // biggest number of collectibles (inclusive)
         },
         enemies: {
-            size: 30, // scale of the picture
+            size: 10, // scale of the picture
             picSize: 1, // original picture size
-            minNumber: 1, // smallest number of enemies
-            maxNumber: 2, // biggest number of enemies
-            speed: 15 // speed of each enemy
+            minNumber: 200, // smallest number of enemies
+            maxNumber: 250, // biggest number of enemies
+            speed: 20, // speed of each enemy
+            spawnTimeout: 0.1 // time it takes to create a new enemy (seconds)
         },
         world: {
-            width: 900, // width of the world (pixels)
-            height: 500 // height of the world (pixels)
+            width: 9000, // width of the world (pixels)
+            height: 5000 // height of the world (pixels)
         },
         hud: {
             font: "Arial", // font for the hud
@@ -92,7 +93,8 @@ export type GameConfig = {
         picSize: number,
         minNumber: number,
         maxNumber: number,
-        speed: number
+        speed: number,
+        spawnTimeout: number
     },
     world: {
         width: number,

@@ -87,9 +87,26 @@ export class Game {
             })
         }
         // generate enemies
-        // TODO
+        let numberOfEnemies =
+            this.config.enemies.minNumber + Math.floor(
+                Math.random()
+                * (this.config.enemies.maxNumber + 1 - this.config.enemies.minNumber))
+        for (let i = 0; i < numberOfEnemies; i++) {
+            this.spawnEnemy()
+        }
+        // set up periodic spawning of enemies
+        setInterval(() => {
+            this.spawnEnemy()
+        }, this.config.enemies.spawnTimeout * 1000)
+    }
+
+    // spawns an enemy
+    private spawnEnemy() {
         this.enemies.push({
-            position: new Vector(100, 0)
+            position: new Vector(
+                (Math.random() - 0.5) * this.config.world.width,
+                (Math.random() - 0.5) * this.config.world.height),
+            rotation: Math.random() * Math.PI * 2
         })
     }
 
@@ -174,6 +191,15 @@ export class Game {
             }
             return false
         })
+        // move enemies
+        this.enemies.forEach(enemy => {
+            enemy.position = enemy.position.add(
+                new Vector(
+                    Math.sin(enemy.rotation),
+                    Math.cos(enemy.rotation))
+                    .mul(3))
+            enemy.rotation = enemy.rotation + (Math.random() - 0.5) * 0.4
+        })
         // check for collisions with the borders
         this.playerPosition.x =
             Math.min(
@@ -187,6 +213,30 @@ export class Game {
                     this.playerPosition.y,
                     -this.config.world.height / 2),
                 this.config.world.height / 2)
+        // for enemies too
+        this.enemies.forEach(enemy => {
+            enemy.position.x =
+                Math.min(
+                    Math.max(
+                        enemy.position.x,
+                        -this.config.world.width / 2),
+                    this.config.world.width / 2)
+            enemy.position.y =
+                Math.min(
+                    Math.max(
+                        enemy.position.y,
+                        -this.config.world.height / 2),
+                    this.config.world.height / 2)
+            if (Math.abs(enemy.position.x) > this.config.world.width / 2
+                || Math.abs(enemy.position.y) > this.config.world.height / 2) {
+                enemy.rotation = Math.PI * 2 - enemy.rotation
+                enemy.position = enemy.position.add(
+                    new Vector(
+                        Math.sin(enemy.rotation),
+                        Math.cos(enemy.rotation))
+                        .mul(3))
+            }
+        })
         // check for collisions with collectibles
         this.collectibles = this.collectibles.filter(collectible => {
             if (this.playerPosition.sub(collectible.position).len
