@@ -347,25 +347,31 @@ export class Game {
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         // background
         ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = "#eeeee0"
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        for (let x = -canvas.width; x < canvas.width + this.config.world.tilesize; x += this.config.world.tilesize) {
+            for (let y = canvas.height; y > -canvas.height - this.config.world.tilesize; y -= this.config.world.tilesize) {
+                let offsetX = this.cameraPosition.x % this.config.world.tilesize
+                let offsetY = this.cameraPosition.y % this.config.world.tilesize
+                ctx.drawImage(
+                    grassPicture,
+                    x - offsetX, y - offsetY,
+                    this.config.world.tilesize, this.config.world.tilesize)
+            }
+        }
         ctx.beginPath()
 
         // collectibles
         ctx.fillStyle = "#f4c242"
         this.collectibles.forEach(collectible => {
-            ctx.arc(
-                canvas.width / 2 + collectible.position.x - this.cameraPosition.x,
-                canvas.height / 2 + collectible.position.y - this.cameraPosition.y,
+            ctx.drawImage(energyPicture,
+                collectible.position.x + canvas.width / 2 - this.cameraPosition.x - this.config.collectibles.size / 2,
+                collectible.position.y + canvas.height / 2 - this.cameraPosition.y - this.config.collectibles.size / 2,
                 this.config.collectibles.size,
-                0,
-                Math.PI * 2)
-            ctx.fill()
+                this.config.collectibles.size
+            )
             ctx.beginPath()
         })
 
         // enemy
-        ctx.fillStyle = "#f4c242"
         this.enemies.forEach(enemy => {
             ctx.drawImage(enemyPicture,
                 enemy.position.x + canvas.width / 2 - this.cameraPosition.x - this.config.enemies.size / 2,
@@ -381,7 +387,7 @@ export class Game {
             this.config.player.size,
             this.config.player.size)
         // spell
-        if (this.textSpell != "") {
+        if (this.spellEntered) {
             // box
             let boxX = canvas.width / 2
                 - canvas.width * this.config.spellBox.widthPercent / 100 / 2
@@ -464,15 +470,7 @@ export class Game {
     }
 }
 
-// ugly hack, idk how it works
-declare var require: {
-    <T>(path: string): T;
-    (paths: string[], callback: (...modules: any[]) => void): void;
-    ensure: (
-        paths: string[],
-        callback: (require: <T>(path: string) => T) => void
-    ) => void;
-};
+declare function require<T>(path: string): T
 
 // get player pictures
 let playerPicsGen = ["down", "up", "left", "right"]
@@ -484,3 +482,10 @@ playerPicsGen.forEach(picName => {
 // get enemy picture
 let enemyPicture = new Image()
 enemyPicture.src = require('../pics/enemy.png')
+// get grass picture
+let grassPicture = new Image()
+grassPicture.src = require('../pics/grasstile.png')
+
+// get energy picture
+let energyPicture = new Image()
+energyPicture.src = require('../pics/energy.png')

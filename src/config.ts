@@ -27,8 +27,8 @@ export let config = {
             moveSpeed: 10 // speed (in pixels per frame)
         },
         collectibles: { // collectibles settings
-            size: 12, // picture size
-            colliderSize: 12, // collider size
+            size: 40, // picture size
+            colliderSize: 40, // collider size
             minNumber: 500, // smallest number of collectibles
             maxNumber: 900 // biggest number of collectibles (inclusive)
         },
@@ -37,7 +37,7 @@ export let config = {
             colliderSize: 20, // collider size
             minNumber: 150, // smallest number of enemies
             maxNumber: 200, // biggest number of enemies
-            speed: 2, // speed of each enemy
+            speed: 4, // speed of each enemy
             spawnTimeout: 0.1, // time it takes to create a new enemy (seconds)
             collectibleActivationRadius: 50, // distance to collectible that makes the enemy go to it
             rotationChange: 0.4, // magnitude of the maximum rotation change per frame
@@ -65,12 +65,13 @@ export let config = {
         },
         world: { // world settings
             width: 7000, // width of the world (pixels)
-            height: 5000 // height of the world (pixels)
+            height: 5000, // height of the world (pixels)
+            tilesize: 512 // size of a tile
         },
         hud: {
             font: "Arial", // font for the hud
             fontSize: 30, // font size
-            color: "#f4f4f4" // hud color
+            color: "#636363" // hud color
         },
         keybindings: { // keybindings
             stopTyping: "Escape", // stop typing
@@ -136,7 +137,8 @@ export type GameConfig = {
     },
     world: {
         width: number,
-        height: number
+        height: number,
+        tilesize: number
     },
     hud: {
         font: string,
