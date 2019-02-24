@@ -22,6 +22,24 @@ export class Game {
     // list of collectibles
     private collectibles: Collectible[] = []
 
+    // add a spell (helper function)
+    private addSpell(spell: Spell) {
+        // check if there is a spell with the same name
+        let indexOfSpellWithTheSameName = -1
+        this.spells.forEach((otherSpell, indexOfOtherSpell) => {
+            if (spell.name == otherSpell.name) {
+                indexOfSpellWithTheSameName = indexOfOtherSpell
+            }
+        })
+        if (indexOfSpellWithTheSameName == -1) {
+            // if there isn't one, just add the spell
+            this.spells.push(spell)
+        } else {
+            // if there is one, add this spell's durability to the other spell's
+            this.spells[indexOfSpellWithTheSameName].durability += spell.durability
+        }
+    }
+
     constructor(config: GameConfig) {
         this.config = config
         // spells for moving
@@ -36,7 +54,7 @@ export class Game {
             let [x, y] = directions[dir]
 
             // generate the spell
-            this.spells.push(
+            this.addSpell(
                 {
                     name: dir,
                     execute: (n: number) => {
@@ -47,16 +65,14 @@ export class Game {
                             return false
                         }
                         return true
-                    }
+                    },
+                    durability: Infinity
                 })
         }
 
         // lowercase the spell names
-        this.spells = this.spells.map(spell => {
-            return {
-                name: spell.name.toLowerCase(),
-                execute: spell.execute
-            }
+        this.spells.forEach(spell => {
+            spell.name = spell.name.toLowerCase()
         })
 
         // generate collectibles
@@ -75,8 +91,9 @@ export class Game {
             this.collectibles.push({
                 position: collectiblePosition,
                 spell: {
-                    name: "Hello there",
-                    execute: _n => { alert("Spell used"); return false }
+                    name: "kool spell",
+                    execute: _n => { alert("Spell used"); return false },
+                    durability: 1
                 }
             })
         }
@@ -100,7 +117,8 @@ export class Game {
                     let spellTester = new RegExp(`.*${this.spell.join('.*').toLowerCase()}.*`)
                     let spell = this.spells.filter(spell => spellTester.test(spell.name))[0]
                     // start it
-                    if (spell) {
+                    if (spell && spell.durability > 0) {
+                        spell.durability--
                         this.spellQueue.push({
                             duration: 0,
                             spell: spell
@@ -128,6 +146,8 @@ export class Game {
         }
         // the characters typed so far are now considered to be in the previous frames.
         this.charactersTypedPreviousFrames = this.spell.length
+        // clean up spells
+        this.spells = this.spells.filter(spell => spell.durability > 0)
         // execute all spells
         this.spellQueue = this.spellQueue.filter(queuedSpell => {
             if (queuedSpell.spell.execute(queuedSpell.duration)) {
@@ -155,7 +175,7 @@ export class Game {
                 > this.config.player.picSize * this.config.player.size
                 + this.config.collectibles.picSize * this.config.collectibles.size)
                 return true
-            this.spells.push(collectible.spell)
+            this.addSpell(collectible.spell)
         })
         // shift camera 
         this.cameraPosition =
@@ -236,7 +256,7 @@ export class Game {
                         ctx.font = `${this.config.spellBox.fontSize}px ${this.config.spellBox.font}`
                         ctx.fillStyle = this.config.spellBox.autocompleteForegroundColor
                         ctx.fillText(
-                            spell.name,
+                            spell.name + (spell.durability == Infinity ? "" : `(${spell.durability})`),
                             complX,
                             complY + this.config.spellBox.fontSize)
                     }

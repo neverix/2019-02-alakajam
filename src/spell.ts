@@ -4,4 +4,6 @@ export default interface Spell {
     // receives the current frame of the spell
     // returns whether this spell can continue executing
     execute(n: number): boolean
+    // number of times the spell can be used
+    durability: number
 }
