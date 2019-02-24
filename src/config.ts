@@ -33,11 +33,11 @@ export let config = {
             maxNumber: 900 // biggest number of collectibles (inclusive)
         },
         enemies: { // enemy settings
-            size: 10, // scale of the picture
-            colliderSize: 10, // collider size
-            minNumber: 200, // smallest number of enemies
-            maxNumber: 250, // biggest number of enemies
-            speed: 3, // speed of each enemy
+            size: 30, // scale of the picture
+            colliderSize: 20, // collider size
+            minNumber: 150, // smallest number of enemies
+            maxNumber: 200, // biggest number of enemies
+            speed: 2, // speed of each enemy
             spawnTimeout: 0.1, // time it takes to create a new enemy (seconds)
             collectibleActivationRadius: 50, // distance to collectible that makes the enemy go to it
             rotationChange: 0.4, // magnitude of the maximum rotation change per frame
@@ -64,7 +64,7 @@ export let config = {
             ]
         },
         world: { // world settings
-            width: 9000, // width of the world (pixels)
+            width: 7000, // width of the world (pixels)
             height: 5000 // height of the world (pixels)
         },
         hud: {

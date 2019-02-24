@@ -32,13 +32,17 @@ export class Game {
     private collectiblesSpells: Spell[]
     // player protection
     private isPlayerProtected: boolean = false
+    // player orientation
+    private playerOrientation: string = "down"
+    // is a spell being enetered?
+    private spellEntered: boolean = false
 
     constructor(config: GameConfig) {
         this.config = config
         // spells for moving
         let directions: { [dir: string]: [number, number] } = {
-            back: [0, -1],
-            front: [0, 1],
+            up: [0, -1],
+            down: [0, 1],
             left: [-1, 0],
             right: [1, 0]
         }
@@ -54,6 +58,7 @@ export class Game {
                         if (n <= config.player.moveDuration) {
                             this.playerPosition.x += config.player.moveSpeed * x
                             this.playerPosition.y += config.player.moveSpeed * y
+                            this.playerOrientation = dir
                             return true
                         }
                     },
@@ -113,7 +118,6 @@ export class Game {
                 (Math.random() - 0.5) * config.world.width,
                 (Math.random() - 0.5) * config.world.height)
             // place the colllectible
-            // TODO pick spell
             this.collectibles.push({
                 position: collectiblePosition,
                 spell: this.collectiblesSpells[
@@ -131,7 +135,9 @@ export class Game {
         }
         // set up periodic spawning of enemies
         setInterval(() => {
-            this.spawnEnemy()
+            if (this.spell.length == 0) {
+                this.spawnEnemy()
+            }
         }, config.enemies.spawnTimeout * 1000)
     }
 
@@ -187,14 +193,17 @@ export class Game {
             /^[a-zA-Z ]$/.test(key) || allowedKeys.indexOf(key) > -1)
         // iterate through the characters typed this frame (or do nothing)
         this.spell.slice(this.charactersTypedPreviousFrames).forEach(key => {
+            this.spellEntered = true
             if (key == this.config.keybindings.executeSpell) {
                 // the user finished the spell(s). apply its effects and reset the spell(s)
                 this.spell.pop()
+                this.spellEntered = false
                 // only continue if the user typed something
                 if (this.spell.length > 0) {
                     // get the list of all spells
                     let enteredSpells = this.spell.join('').split(' ')
                     enteredSpells.forEach(enteredSpell => {
+                        if (enteredSpell == ' ') return
                         // test the spell
                         let spellTester = new RegExp(`.*${enteredSpell.split('').join('.*').toLowerCase()}.*`)
                         let spell = this.spells.filter(spell => spellTester.test(spell.name))[0]
@@ -218,6 +227,8 @@ export class Game {
             } else if (key == this.config.keybindings.stopTyping) {
                 // erase the entire spell
                 this.spell = []
+                // stop entering the spell
+                this.spellEntered = false
             }
         })
         // erase repeated spaces in the end
@@ -227,6 +238,8 @@ export class Game {
             || (this.spell.length == 1 && this.spell[0] == ' ')) {
             this.spell.pop()
         }
+        // pause the main game loop while the user types the spell
+        if (this.spellEntered) return
         // the characters typed so far are now considered to be in the previous frames.
         this.charactersTypedPreviousFrames = this.spell.length
         // clean up spells
@@ -334,7 +347,7 @@ export class Game {
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         // background
         ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = "#757a82"
+        ctx.fillStyle = "#eeeee0"
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         ctx.beginPath()
 
@@ -354,18 +367,15 @@ export class Game {
         // enemy
         ctx.fillStyle = "#f4c242"
         this.enemies.forEach(enemy => {
-            ctx.arc(
-                canvas.width / 2 + enemy.position.x - this.cameraPosition.x,
-                canvas.height / 2 + enemy.position.y - this.cameraPosition.y,
+            ctx.drawImage(enemyPicture,
+                enemy.position.x + canvas.width / 2 - this.cameraPosition.x - this.config.enemies.size / 2,
+                enemy.position.y + canvas.height / 2 - this.cameraPosition.y - this.config.enemies.size / 2,
                 this.config.enemies.size,
-                0,
-                Math.PI * 2
-            )
-            ctx.fill()
+                this.config.enemies.size)
             ctx.beginPath()
         })
         // player
-        ctx.drawImage(playerPics.front,
+        ctx.drawImage(playerPics[this.playerOrientation],
             this.playerPosition.x + canvas.width / 2 - this.cameraPosition.x - this.config.player.size / 2,
             this.playerPosition.y + canvas.height / 2 - this.cameraPosition.y - this.config.player.size / 2,
             this.config.player.size,
@@ -465,10 +475,12 @@ declare var require: {
 };
 
 // get player pictures
-let playerPicsGen = ["back", "front", "left", "right"]
-let playerPics = {
-    right: new Image(), front: new Image(), left: new Image(), back: new Image()
-}
+let playerPicsGen = ["down", "up", "left", "right"]
+let playerPics: { [dir: string]: HTMLImageElement } = {}
 playerPicsGen.forEach(picName => {
+    playerPics[picName] = new Image()
     playerPics[picName].src = require(`../pics/player/${picName}.png`)
 })
+// get enemy picture
+let enemyPicture = new Image()
+enemyPicture.src = require('../pics/enemy.png')
