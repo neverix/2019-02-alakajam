@@ -29,6 +29,10 @@ export class Game {
     private enemies: Enemy[] = []
     // game over callback
     private gameOver: () => void = () => { }
+    // spells for collectibles
+    private collectiblesSpells: Spell[]
+    // player protection
+    private isPlayerProtected: boolean = false
 
     constructor(config: GameConfig) {
         this.config = config
@@ -65,6 +69,48 @@ export class Game {
             spell.name = spell.name.toLowerCase()
         })
 
+        // set up spells for collectibles
+        this.collectiblesSpells = [
+            {
+                name: "kill nearest",
+                execute: (_n: number) => {
+                    this.enemies.splice(
+                        this.enemies
+                            .map((x, i): [Enemy, number] => [x, i])
+                            .sort(([a, _a], [b, _b]) =>
+                                a.position.sub(this.playerPosition).len - b.position.sub(this.playerPosition).len
+                            )[0][1], 1)
+                    return false
+                },
+                durability: 3
+            },
+            {
+                name: "kill nearest",
+                execute: (_n: number) => {
+                    this.enemies.splice(
+                        this.enemies
+                            .map((x, i): [Enemy, number] => [x, i])
+                            .sort(([a, _a], [b, _b]) =>
+                                a.position.sub(this.playerPosition).len - b.position.sub(this.playerPosition).len
+                            )[0][1], 1)
+                    return false
+                },
+                durability: 4
+            },
+            {
+                name: "protection",
+                execute: (n: number) => {
+                    if (n >= this.config.spells.protectionLength) {
+                        this.isPlayerProtected = false
+                        return false
+                    }
+                    this.isPlayerProtected = true
+                    return true
+                },
+                durability: 2
+            }
+        ]
+
         // generate collectibles
         // pick a random number of collectibles
         this.numberOfCollectibles =
@@ -80,11 +126,9 @@ export class Game {
             // TODO pick spell
             this.collectibles.push({
                 position: collectiblePosition,
-                spell: {
-                    name: "kool spell",
-                    execute: _n => { alert("Spell used"); return false },
-                    durability: 1
-                }
+                spell: this.collectiblesSpells[
+                    Math.floor(
+                        Math.random() * this.collectiblesSpells.length)]
             })
         }
         // generate enemies
@@ -256,9 +300,10 @@ export class Game {
         })
         // check for collisions with enemies
         this.enemies = this.enemies.filter(enemy => {
-            if (this.playerPosition.sub(enemy.position).len
+            if ((this.playerPosition.sub(enemy.position).len
                 > this.config.player.picSize * this.config.player.size
                 + this.config.collectibles.picSize * this.config.collectibles.size)
+                || this.isPlayerProtected)
                 return true
             this.gameOver()
             alert("GAME OVER!")

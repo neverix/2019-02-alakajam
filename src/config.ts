@@ -43,6 +43,9 @@ export let config = {
             rotationChange: 0.4, // magnitude of the maximum rotation change per frame
             borderEvasionSpeed: 3 // speed with which it evades the borders
         },
+        spells: {
+            protectionLength: Infinity // how long the protection ability lasts
+        },
         world: {
             width: 9000, // width of the world (pixels)
             height: 5000 // height of the world (pixels)
@@ -101,6 +104,9 @@ export type GameConfig = {
         collectibleActivationRadius: number,
         rotationChange: number,
         borderEvasionSpeed: number
+    },
+    spells: {
+        protectionLength: number
     },
     world: {
         width: number,
