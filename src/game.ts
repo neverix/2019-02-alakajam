@@ -37,8 +37,8 @@ export class Game {
         this.config = config
         // spells for moving
         let directions: { [dir: string]: [number, number] } = {
-            up: [0, -1],
-            down: [0, 1],
+            back: [0, -1],
+            front: [0, 1],
             left: [-1, 0],
             right: [1, 0]
         }
@@ -54,10 +54,8 @@ export class Game {
                         if (n <= config.player.moveDuration) {
                             this.playerPosition.x += config.player.moveSpeed * x
                             this.playerPosition.y += config.player.moveSpeed * y
-                        } else {
-                            return false
+                            return true
                         }
-                        return true
                     },
                     durability: Infinity
                 })
@@ -98,12 +96,10 @@ export class Game {
         ]
         // add spells from config
         config.spells.additionalSpells.forEach(additionalSpell => {
-            console.log(additionalSpell.execute)
             let executeFunction = Function("n", additionalSpell.execute).bind(this)
             let newSpell = Object.assign({}, additionalSpell, { execute: executeFunction })
             this.collectiblesSpells.push(newSpell)
         })
-        console.log(this.collectiblesSpells)
 
         // generate collectibles
         // pick a random number of collectibles
@@ -192,21 +188,25 @@ export class Game {
         // iterate through the characters typed this frame (or do nothing)
         this.spell.slice(this.charactersTypedPreviousFrames).forEach(key => {
             if (key == this.config.keybindings.executeSpell) {
-                // the user finished the spell. apply its effects and reset the spell
+                // the user finished the spell(s). apply its effects and reset the spell(s)
                 this.spell.pop()
                 // only continue if the user typed something
                 if (this.spell.length > 0) {
-                    // test the spell
-                    let spellTester = new RegExp(`.*${this.spell.join('.*').toLowerCase()}.*`)
-                    let spell = this.spells.filter(spell => spellTester.test(spell.name))[0]
-                    // start it
-                    if (spell && spell.durability > 0) {
-                        spell.durability--
-                        this.spellQueue.push({
-                            duration: 0,
-                            spell: spell
-                        })
-                    }
+                    // get the list of all spells
+                    let enteredSpells = this.spell.join('').split(' ')
+                    enteredSpells.forEach(enteredSpell => {
+                        // test the spell
+                        let spellTester = new RegExp(`.*${enteredSpell.split('').join('.*').toLowerCase()}.*`)
+                        let spell = this.spells.filter(spell => spellTester.test(spell.name))[0]
+                        // start it
+                        if (spell && spell.durability > 0) {
+                            spell.durability--
+                            this.spellQueue.push({
+                                duration: 0,
+                                spell: spell
+                            })
+                        }
+                    })
                     // reset
                     this.spell = []
                     this.charactersTypedPreviousFrames = 0
@@ -316,17 +316,18 @@ export class Game {
             alert("GAME OVER!")
             return true
         })
-        // shift camera 
-        this.cameraPosition =
-            this.cameraPosition.add(
-                this.playerPosition
-                    .sub(this.cameraPosition)
-                    .norm()
-                    .mul(this.config.camera.moveSpeed))
         // check if the player won
         if (this.collectibles.length == 0) {
             alert("YOU WON!!!")
             this.gameOver()
+        }
+        // shift camera 
+        let diff = this.playerPosition
+            .sub(this.cameraPosition)
+        if (diff.len > this.config.camera.moveSpeed) {
+            this.cameraPosition =
+                this.cameraPosition.add(
+                    diff.norm().mul(this.config.camera.moveSpeed))
         }
     }
 
@@ -393,10 +394,13 @@ export class Game {
                 boxY + this.config.spellBox.fontSize)
 
             // autocompletion
+            // the spell currently being typed
+            let currentSpells = this.spell.join('').split(' ')
+            let currentSpell = currentSpells.pop()
             // find the spell that shares the first letter with the currently typed one
             let bestMatchingIndex = -1
             this.spells.forEach((spell, index) => {
-                if (spell.name[0] == this.spell[0]) {
+                if (spell.name[0] == currentSpell[0]) {
                     bestMatchingIndex = index
                 }
             })
@@ -407,7 +411,7 @@ export class Game {
             }
             // match for autocompletion
             this.spells.filter(spell =>
-                new RegExp(this.spell.join('.*').toLowerCase()).test(spell.name))
+                new RegExp(currentSpell.split('').join('.*').toLowerCase()).test(spell.name))
                 .forEach(
                     (spell, index) => {
                         let complX = boxX
