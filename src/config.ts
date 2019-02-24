@@ -18,23 +18,28 @@ export let config = {
             autocompleteForegroundColor: "#eaeaea" // foreground (text) color of the autocomplete menu
         },
         player: {
-            size: 20, // picture scale
+            size: 22, // picture scale
             picSize: 1, // size of the original picture
-            moveSpeed: 20, // speed (in pixels)
+            moveSpeed: 20, // speed (in pixels per frame)
             moveDuration: 3 // length of a move spell (frames)
         },
         camera: {
-            moveSpeed: 10 // speed (in pixels)
+            moveSpeed: 10 // speed (in pixels per frame)
         },
         collectibles: {
-            size: 10, // scale of the picture
+            size: 12, // scale of the picture
             picSize: 1, // original picture size
-            minNumber: 3, // smallest number of collectibles
-            maxNumber: 5 // biggest number of collectibles (inclusive)
+            minNumber: 10, // smallest number of collectibles
+            maxNumber: 15 // biggest number of collectibles (inclusive)
         },
         world: {
             width: 900, // width of the world (pixels)
             height: 500 // height of the world (pixels)
+        },
+        hud: {
+            font: "Arial", // font for the hud
+            fontSize: 30, // font size
+            color: "#f4f4f4" // hud color
         }
     }
 }
@@ -78,5 +83,10 @@ export type GameConfig = {
     world: {
         width: number,
         height: number
+    },
+    hud: {
+        font: string,
+        fontSize: number,
+        color: string
     }
 }

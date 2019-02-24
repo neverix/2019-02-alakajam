@@ -21,6 +21,8 @@ export class Game {
     private cameraPosition: Vector = new Vector()
     // list of collectibles
     private collectibles: Collectible[] = []
+    // total number of collectibles
+    private numberOfCollectibles: number
 
     // add a spell (helper function)
     private addSpell(spell: Spell) {
@@ -77,11 +79,11 @@ export class Game {
 
         // generate collectibles
         // pick a random number of collectibles
-        let numberOfCOllectibles =
+        this.numberOfCollectibles =
             this.config.collectibles.minNumber + Math.floor(
                 Math.random()
                 * (this.config.collectibles.maxNumber + 1 - this.config.collectibles.minNumber))
-        for (let i = 0; i < numberOfCOllectibles; i++) {
+        for (let i = 0; i < this.numberOfCollectibles; i++) {
             // pick a random position within the bounds
             let collectiblePosition = new Vector(
                 (Math.random() - 0.5) * this.config.world.width,
@@ -253,7 +255,6 @@ export class Game {
                             this.config.spellBox.boxSize)
 
                         // text
-                        ctx.font = `${this.config.spellBox.fontSize}px ${this.config.spellBox.font}`
                         ctx.fillStyle = this.config.spellBox.autocompleteForegroundColor
                         ctx.fillText(
                             spell.name + (spell.durability == Infinity ? "" : `(${spell.durability})`),
@@ -262,6 +263,12 @@ export class Game {
                     }
                 )
         }
+        // HUD score
+        ctx.font = `${this.config.hud.fontSize}px ${this.config.hud.font}`
+        ctx.fillStyle = this.config.hud.color
+        ctx.fillText(
+            `${this.numberOfCollectibles - this.collectibles.length}/${this.numberOfCollectibles}`,
+            0, this.config.hud.fontSize)
     }
 
     // gets the text of the spell
