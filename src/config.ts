@@ -32,6 +32,13 @@ export let config = {
             minNumber: 10, // smallest number of collectibles
             maxNumber: 15 // biggest number of collectibles (inclusive)
         },
+        enemies: {
+            size: 30, // scale of the picture
+            picSize: 1, // original picture size
+            minNumber: 1, // smallest number of enemies
+            maxNumber: 2, // biggest number of enemies
+            speed: 15 // speed of each enemy
+        },
         world: {
             width: 900, // width of the world (pixels)
             height: 500 // height of the world (pixels)
@@ -79,6 +86,13 @@ export type GameConfig = {
         picSize: number,
         minNumber: number,
         maxNumber: number
+    },
+    enemies: {
+        size: number,
+        picSize: number,
+        minNumber: number,
+        maxNumber: number,
+        speed: number
     },
     world: {
         width: number,

@@ -2,6 +2,7 @@ import { GameConfig, config } from './config'
 import Spell from './spell'
 import Vector from './vector'
 import Collectible from './collectible'
+import Enemy from './enemy'
 
 export class Game {
     // game config
@@ -23,24 +24,10 @@ export class Game {
     private collectibles: Collectible[] = []
     // total number of collectibles
     private numberOfCollectibles: number
-
-    // add a spell (helper function)
-    private addSpell(spell: Spell) {
-        // check if there is a spell with the same name
-        let indexOfSpellWithTheSameName = -1
-        this.spells.forEach((otherSpell, indexOfOtherSpell) => {
-            if (spell.name == otherSpell.name) {
-                indexOfSpellWithTheSameName = indexOfOtherSpell
-            }
-        })
-        if (indexOfSpellWithTheSameName == -1) {
-            // if there isn't one, just add the spell
-            this.spells.push(spell)
-        } else {
-            // if there is one, add this spell's durability to the other spell's
-            this.spells[indexOfSpellWithTheSameName].durability += spell.durability
-        }
-    }
+    // enemies
+    private enemies: Enemy[] = []
+    // game over callback
+    private gameOver: () => void = () => { }
 
     constructor(config: GameConfig) {
         this.config = config
@@ -98,6 +85,35 @@ export class Game {
                     durability: 1
                 }
             })
+        }
+        // generate enemies
+        // TODO
+        this.enemies.push({
+            position: new Vector(100, 0)
+        })
+    }
+
+    // add an action on game over
+    onGameOver(cb: () => void) {
+        let oldGameOver = this.gameOver
+        this.gameOver = () => { oldGameOver(); cb() }
+    }
+
+    // add a spell (helper function)
+    private addSpell(spell: Spell) {
+        // check if there is a spell with the same name
+        let indexOfSpellWithTheSameName = -1
+        this.spells.forEach((otherSpell, indexOfOtherSpell) => {
+            if (spell.name == otherSpell.name) {
+                indexOfSpellWithTheSameName = indexOfOtherSpell
+            }
+        })
+        if (indexOfSpellWithTheSameName == -1) {
+            // if there isn't one, just add the spell
+            this.spells.push(spell)
+        } else {
+            // if there is one, add this spell's durability to the other spell's
+            this.spells[indexOfSpellWithTheSameName].durability += spell.durability
         }
     }
 
@@ -179,6 +195,16 @@ export class Game {
                 return true
             this.addSpell(collectible.spell)
         })
+        // check for collisions with enemies
+        this.enemies = this.enemies.filter(enemy => {
+            if (this.playerPosition.sub(enemy.position).len
+                > this.config.player.picSize * this.config.player.size
+                + this.config.collectibles.picSize * this.config.collectibles.size)
+                return true
+            this.gameOver()
+            alert("GAME OVER!")
+            return true
+        })
         // shift camera 
         this.cameraPosition =
             this.cameraPosition.add(
@@ -186,6 +212,11 @@ export class Game {
                     .sub(this.cameraPosition)
                     .norm()
                     .mul(this.config.camera.moveSpeed))
+        // check if the player won
+        if (this.collectibles.length == 0) {
+            alert("YOU WON!!!")
+            this.gameOver()
+        }
     }
 
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
@@ -193,8 +224,8 @@ export class Game {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.fillStyle = "#757a82"
         ctx.fillRect(0, 0, canvas.width, canvas.height)
-
         ctx.beginPath()
+
         // collectibles
         ctx.fillStyle = "#f4c242"
         this.collectibles.forEach(collectible => {
@@ -204,6 +235,20 @@ export class Game {
                 this.config.collectibles.size,
                 0,
                 Math.PI * 2)
+            ctx.fill()
+            ctx.beginPath()
+        })
+
+        // enemy
+        ctx.fillStyle = "#f4c242"
+        this.enemies.forEach(enemy => {
+            ctx.arc(
+                canvas.width / 2 + enemy.position.x - this.cameraPosition.x,
+                canvas.height / 2 + enemy.position.y - this.cameraPosition.y,
+                this.config.enemies.size,
+                0,
+                Math.PI * 2
+            )
             ctx.fill()
             ctx.beginPath()
         })
