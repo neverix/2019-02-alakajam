@@ -1,33 +1,40 @@
+// the game config, can be modified
 export let config = {
     canvas: {
-        width: 900,
-        height: 500
+        width: 900, // width of the canvas
+        height: 500 // height of the canvas
     },
     game: {
         spellBox: {
-            font: "Arial",
-            fontSize: 30,
-            boxSize: 45,
-            widthPercent: 60,
-            verticalOffset: 30,
-            textPadding: 5,
-            backgroundColor: "#f4f4f4",
-            foregroundColor: "#757a82",
-            autocompleteBackgroundColor: "#7c796b",
-            autocompleteForegroundColor: "#eaeaea"
+            font: "Arial", // font to be used
+            fontSize: 30, // the font size
+            boxSize: 45, // vertical size of the box
+            widthPercent: 60, // percentage of the game field's width that the box occupies
+            verticalOffset: 30, // the vertical offset from the top (% of height)
+            textPadding: 5, // horizontal padding of the text
+            backgroundColor: "#f4f4f4", // background color
+            foregroundColor: "#757a82", // foreground (text) color
+            autocompleteBackgroundColor: "#7c796b", // background color of the autocomplete menu
+            autocompleteForegroundColor: "#eaeaea" // foreground (text) color of the autocomplete menu
         },
         player: {
-            size: 20,
-            picSize: 1,
-            moveSpeed: 20,
-            moveDuration: 3
+            size: 20, // picture scale
+            picSize: 1, // size of the original picture
+            moveSpeed: 20, // speed (in pixels)
+            moveDuration: 3 // length of a move spell (frames)
         },
         camera: {
-            moveSpeed: 10
+            moveSpeed: 10 // speed (in pixels)
         },
         collectibles: {
-            size: 10,
-            picSize: 1
+            size: 10, // scale of the picture
+            picSize: 1, // original picture size
+            minNumber: 3, // smallest number of collectibles
+            maxNumber: 5 // biggest number of collectibles (inclusive)
+        },
+        world: {
+            width: 900, // width of the world (pixels)
+            height: 500 // height of the world (pixels)
         }
     }
 }
@@ -64,6 +71,12 @@ export type GameConfig = {
     },
     collectibles: {
         size: number,
-        picSize: number
+        picSize: number,
+        minNumber: number,
+        maxNumber: number
+    },
+    world: {
+        width: number,
+        height: number
     }
 }

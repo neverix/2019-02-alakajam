@@ -60,16 +60,26 @@ export class Game {
         })
 
         // generate collectibles
-        // TODO
-        this.collectibles = [
-            new Collectible(new Vector(200, 0), {
-                name: "atbge",
-                execute: (n) => {
-                    alert("ATBGE")
-                    return false
+        // pick a random number of collectibles
+        let numberOfCOllectibles =
+            this.config.collectibles.minNumber + Math.floor(
+                Math.random()
+                * (this.config.collectibles.maxNumber + 1 - this.config.collectibles.minNumber))
+        for (let i = 0; i < numberOfCOllectibles; i++) {
+            // pick a random position within the bounds
+            let collectiblePosition = new Vector(
+                (Math.random() - 0.5) * this.config.world.width,
+                (Math.random() - 0.5) * this.config.world.height)
+            // place the colllectible
+            // TODO pick spell
+            this.collectibles.push({
+                position: collectiblePosition,
+                spell: {
+                    name: "Hello there",
+                    execute: _n => { alert("Spell used"); return false }
                 }
             })
-        ]
+        }
     }
 
     update() {
@@ -126,6 +136,19 @@ export class Game {
             }
             return false
         })
+        // check for collisions with the borders
+        this.playerPosition.x =
+            Math.min(
+                Math.max(
+                    this.playerPosition.x,
+                    -this.config.world.width / 2),
+                this.config.world.width / 2)
+        this.playerPosition.y =
+            Math.min(
+                Math.max(
+                    this.playerPosition.y,
+                    -this.config.world.height / 2),
+                this.config.world.height / 2)
         // check for collisions with collectibles
         this.collectibles = this.collectibles.filter(collectible => {
             if (this.playerPosition.sub(collectible.position).len
@@ -144,7 +167,6 @@ export class Game {
     }
 
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-
         // background
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.fillStyle = "#757a82"
