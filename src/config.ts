@@ -37,8 +37,11 @@ export let config = {
             picSize: 1, // original picture size
             minNumber: 200, // smallest number of enemies
             maxNumber: 250, // biggest number of enemies
-            speed: 20, // speed of each enemy
-            spawnTimeout: 0.1 // time it takes to create a new enemy (seconds)
+            speed: 3, // speed of each enemy
+            spawnTimeout: 0.1, // time it takes to create a new enemy (seconds)
+            collectibleActivationRadius: 50, // distance to collectible that makes the enemy go to it
+            rotationChange: 0.4, // magnitude of the maximum rotation change per frame
+            borderEvasionSpeed: 3 // speed with which it evades the borders
         },
         world: {
             width: 9000, // width of the world (pixels)
@@ -94,7 +97,10 @@ export type GameConfig = {
         minNumber: number,
         maxNumber: number,
         speed: number,
-        spawnTimeout: number
+        spawnTimeout: number,
+        collectibleActivationRadius: number,
+        rotationChange: number,
+        borderEvasionSpeed: number
     },
     world: {
         width: number,

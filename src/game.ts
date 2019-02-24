@@ -4,6 +4,7 @@ import Vector from './vector'
 import Collectible from './collectible'
 import Enemy from './enemy'
 
+
 export class Game {
     // game config
     private config: GameConfig
@@ -197,8 +198,16 @@ export class Game {
                 new Vector(
                     Math.sin(enemy.rotation),
                     Math.cos(enemy.rotation))
-                    .mul(3))
-            enemy.rotation = enemy.rotation + (Math.random() - 0.5) * 0.4
+                    .mul(this.config.enemies.speed))
+            enemy.rotation = enemy.rotation + (Math.random() - 0.5) * this.config.enemies.rotationChange
+            this.collectibles.forEach(collectible => {
+                if (enemy.position.sub(collectible.position).len < this.config.enemies.collectibleActivationRadius) {
+                    enemy.rotation =
+                        Math.atan2(
+                            enemy.position.y - collectible.position.y,
+                            enemy.position.x - collectible.position.y)
+                }
+            })
         })
         // check for collisions with the borders
         this.playerPosition.x =
@@ -234,7 +243,7 @@ export class Game {
                     new Vector(
                         Math.sin(enemy.rotation),
                         Math.cos(enemy.rotation))
-                        .mul(3))
+                        .mul(this.config.enemies.borderEvasionSpeed))
             }
         })
         // check for collisions with collectibles
