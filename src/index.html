@@ -8,10 +8,23 @@
             padding: 0;
             margin: 0;
         }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            background-color: #222;
+            color: #aaa;
+        }
     </style>
 </head>
 
 <body>
+    <div id=death>
+        <h1>
+            You died!
+        </h1>
+        <p><button id=restart-button>Try again</button></p>
+    </div>
     <div id=story>
         <h1>Spellcaster</h1>
         <p id=p1>This is a story about a cat. He lived like a normal cat, until one day...</p>
@@ -24,7 +37,7 @@
         <h2>Controls</h2>
         <ul>
             <li>
-                Type letters to do magic. There are only 4 spells:
+                Type letters to do magic, enter to execute, escape to stop it. There are only 4 spells:
                 <ul>
                     <li>move left</li>
                     <li>move right</li>

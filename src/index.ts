@@ -19,11 +19,32 @@ for (let i = minParagraphIndex; i <= maxParagraphIndex; i++) {
         elem.appendChild(button)
     }
 }
+
+declare function require<T>(path: string): T
+
 // start the game
+document.getElementById("death").style.display = "none"
 let button = document.getElementById("starter")
 button.onclick = () => {
+    // play music
+    let music: string = require('../sound/track.mp3')
+    let audio = document.getElementById("music") as HTMLAudioElement
+    audio.src = music
+    audio.play()
+    let isNotFirstTime = false
     document.getElementById("story").style.display = "none"
-    start(() => {
-        return new Game(config.game)
+    start((cb: (g: Game) => void) => {
+        if (isNotFirstTime) {
+            // display "you lost message"
+            document.getElementById("death").style.display = "block"
+            document.getElementById("restart-button").onclick = () => {
+                document.getElementById("death").style.display = "none"
+                document.getElementById("canvas").style.display = "block"
+                isNotFirstTime = true
+                cb(new Game(config.game))
+            }
+        }
+        isNotFirstTime = true
+        cb(new Game(config.game))
     }, config)
 }

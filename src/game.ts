@@ -326,12 +326,11 @@ export class Game {
                 || this.isPlayerProtected)
                 return true
             this.gameOver()
-            alert("GAME OVER!")
             return true
         })
         // check if the player won
         if (this.collectibles.length == 0) {
-            alert("YOU WON!!!")
+            alert("YOU WON!!! (this will never happen really)")
             this.gameOver()
         }
         // shift camera 
