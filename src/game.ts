@@ -85,19 +85,6 @@ export class Game {
                 durability: 3
             },
             {
-                name: "kill nearest",
-                execute: (_n: number) => {
-                    this.enemies.splice(
-                        this.enemies
-                            .map((x, i): [Enemy, number] => [x, i])
-                            .sort(([a, _a], [b, _b]) =>
-                                a.position.sub(this.playerPosition).len - b.position.sub(this.playerPosition).len
-                            )[0][1], 1)
-                    return false
-                },
-                durability: 4
-            },
-            {
                 name: "protection",
                 execute: (n: number) => {
                     if (n >= this.config.spells.protectionLength) {
@@ -110,18 +97,29 @@ export class Game {
                 durability: 2
             }
         ]
+        // add spells from config
+        config.spells.additionalSpells.forEach(additionalSpell => {
+            this.collectiblesSpells.push({
+                name: additionalSpell.name,
+                durability: additionalSpell.durability,
+                execute: eval(additionalSpell.execute)
+            })
+        })
+
+        console.log(this.collectiblesSpells)
+        alert("no")
 
         // generate collectibles
         // pick a random number of collectibles
         this.numberOfCollectibles =
-            this.config.collectibles.minNumber + Math.floor(
+            config.collectibles.minNumber + Math.floor(
                 Math.random()
-                * (this.config.collectibles.maxNumber + 1 - this.config.collectibles.minNumber))
+                * (config.collectibles.maxNumber + 1 - config.collectibles.minNumber))
         for (let i = 0; i < this.numberOfCollectibles; i++) {
             // pick a random position within the bounds
             let collectiblePosition = new Vector(
-                (Math.random() - 0.5) * this.config.world.width,
-                (Math.random() - 0.5) * this.config.world.height)
+                (Math.random() - 0.5) * config.world.width,
+                (Math.random() - 0.5) * config.world.height)
             // place the colllectible
             // TODO pick spell
             this.collectibles.push({
@@ -133,16 +131,16 @@ export class Game {
         }
         // generate enemies
         let numberOfEnemies =
-            this.config.enemies.minNumber + Math.floor(
+            config.enemies.minNumber + Math.floor(
                 Math.random()
-                * (this.config.enemies.maxNumber + 1 - this.config.enemies.minNumber))
+                * (config.enemies.maxNumber + 1 - config.enemies.minNumber))
         for (let i = 0; i < numberOfEnemies; i++) {
             this.spawnEnemy()
         }
         // set up periodic spawning of enemies
         setInterval(() => {
             this.spawnEnemy()
-        }, this.config.enemies.spawnTimeout * 1000)
+        }, config.enemies.spawnTimeout * 1000)
     }
 
     // spawns an enemy
@@ -181,14 +179,17 @@ export class Game {
 
     update() {
         // keys that users are allowed to enter
-        let allowedKeys = ["Enter", "Backspace", "Escape"]
+        let allowedKeys = [
+            this.config.keybindings.executeSpell,
+            "Backspace",
+            this.config.keybindings.stopTyping]
 
         // only include the alphabet, spaces and those keys
         this.spell = this.spell.filter(key =>
             /^[a-zA-Z ]$/.test(key) || allowedKeys.indexOf(key) > -1)
         // iterate through the characters typed this frame (or do nothing)
         this.spell.slice(this.charactersTypedPreviousFrames).forEach(key => {
-            if (key == "Enter") {
+            if (key == this.config.keybindings.executeSpell) {
                 // the user finished the spell. apply its effects and reset the spell
                 this.spell.pop()
                 // only continue if the user typed something
@@ -212,7 +213,7 @@ export class Game {
                 // erase a letter
                 this.spell.pop()
                 this.spell.pop()
-            } else if (key == "Escape") {
+            } else if (key == this.config.keybindings.stopTyping) {
                 // erase the entire spell
                 this.spell = []
             }

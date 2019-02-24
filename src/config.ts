@@ -1,11 +1,11 @@
 // the game config, can be modified
 export let config = {
-    canvas: {
+    canvas: { // canvas settings
         width: 900, // width of the canvas
         height: 500 // height of the canvas
     },
-    game: {
-        spellBox: {
+    game: { // game settings
+        spellBox: { // settings for the spell box
             font: "Arial", // font to be used
             fontSize: 30, // the font size
             boxSize: 45, // vertical size of the box
@@ -17,22 +17,22 @@ export let config = {
             autocompleteBackgroundColor: "#7c796b", // background color of the autocomplete menu
             autocompleteForegroundColor: "#eaeaea" // foreground (text) color of the autocomplete menu
         },
-        player: {
+        player: { // player settings
             size: 22, // picture scale
             picSize: 1, // size of the original picture
             moveSpeed: 20, // speed (in pixels per frame)
             moveDuration: 3 // length of a move spell (frames)
         },
-        camera: {
+        camera: { // camera settings
             moveSpeed: 10 // speed (in pixels per frame)
         },
-        collectibles: {
+        collectibles: { // collectibles settings
             size: 12, // scale of the picture
             picSize: 1, // original picture size
             minNumber: 500, // smallest number of collectibles
             maxNumber: 900 // biggest number of collectibles (inclusive)
         },
-        enemies: {
+        enemies: { // enemy settings
             size: 10, // scale of the picture
             picSize: 1, // original picture size
             minNumber: 200, // smallest number of enemies
@@ -43,10 +43,25 @@ export let config = {
             rotationChange: 0.4, // magnitude of the maximum rotation change per frame
             borderEvasionSpeed: 3 // speed with which it evades the borders
         },
-        spells: {
-            protectionLength: Infinity // how long the protection ability lasts
+        spells: { // spell settings
+            protectionLength: Infinity, // how long the protection ability lasts
+            additionalSpells: [ // additional spells
+                {
+                    name: "kill nearest", // name of the spell
+                    execute: `function(_n) {
+                        this.enemies.splice(
+                            this.enemies
+                                .map((x, i) => [x, i])
+                                .sort(([a, _a], [b, _b]) =>
+                                    a.position.sub(this.playerPosition).len - b.position.sub(this.playerPosition).len
+                                )[0][1], 1)
+                        return false
+                    }`, // quoted execute funcition, run in the context of the Game class. this doesn't get transpiled
+                    durability: 2 // durability, same as in Spell
+                }
+            ]
         },
-        world: {
+        world: { // world settings
             width: 9000, // width of the world (pixels)
             height: 5000 // height of the world (pixels)
         },
@@ -54,6 +69,10 @@ export let config = {
             font: "Arial", // font for the hud
             fontSize: 30, // font size
             color: "#f4f4f4" // hud color
+        },
+        keybindings: { // keybindings
+            stopTyping: "Escape", // stop typing
+            executeSpell: "Enter"
         }
     }
 }
@@ -106,7 +125,12 @@ export type GameConfig = {
         borderEvasionSpeed: number
     },
     spells: {
-        protectionLength: number
+        protectionLength: number,
+        additionalSpells: {
+            name: string,
+            durability: number,
+            execute: string
+        }[]
     },
     world: {
         width: number,
@@ -116,5 +140,9 @@ export type GameConfig = {
         font: string,
         fontSize: number,
         color: string
+    },
+    keybindings: {
+        stopTyping: string,
+        executeSpell: string
     }
 }
