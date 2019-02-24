@@ -4,7 +4,12 @@
         "target": "es5",
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "lib": [
+            "es2015",
+            "es2017",
+            "dom"
+        ]
     },
     "include": [
         "src/**/*.ts"

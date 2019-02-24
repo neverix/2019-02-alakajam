@@ -4,6 +4,16 @@ import Vector from './vector'
 import Collectible from './collectible'
 import Enemy from './enemy'
 
+declare var require: {
+    <T>(path: string): T;
+    (paths: string[], callback: (...modules: any[]) => void): void;
+    ensure: (
+        paths: string[],
+        callback: (require: <T>(path: string) => T) => void
+    ) => void;
+};
+
+let playerBack = require('./pics/player/back.png')
 
 export class Game {
     // game config
@@ -99,15 +109,12 @@ export class Game {
         ]
         // add spells from config
         config.spells.additionalSpells.forEach(additionalSpell => {
-            this.collectiblesSpells.push({
-                name: additionalSpell.name,
-                durability: additionalSpell.durability,
-                execute: eval(additionalSpell.execute)
-            })
+            console.log(additionalSpell.execute)
+            let executeFunction = Function("n", additionalSpell.execute).bind(this)
+            let newSpell = Object.assign({}, additionalSpell, { execute: executeFunction })
+            this.collectiblesSpells.push(newSpell)
         })
-
         console.log(this.collectiblesSpells)
-        alert("no")
 
         // generate collectibles
         // pick a random number of collectibles
@@ -390,8 +397,22 @@ export class Game {
                 boxY + this.config.spellBox.fontSize)
 
             // autocompletion
+            // find the spell that shares the first letter with the currently typed one
+            let bestMatchingIndex = -1
+            this.spells.forEach((spell, index) => {
+                if (spell.name[0] == this.spell[0]) {
+                    bestMatchingIndex = index
+                }
+            })
+            // make that the first element
+            if (bestMatchingIndex != -1) {
+                [this.spells[0], this.spells[bestMatchingIndex]]
+                    = [this.spells[bestMatchingIndex], this.spells[0]]
+            }
+            // match for autocompletion
             this.spells.filter(spell =>
-                new RegExp(this.spell.join('.*').toLowerCase()).test(spell.name)).forEach(
+                new RegExp(this.spell.join('.*').toLowerCase()).test(spell.name))
+                .forEach(
                     (spell, index) => {
                         let complX = boxX
                         let complY = boxY + (index + 1) * this.config.spellBox.boxSize

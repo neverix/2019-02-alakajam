@@ -48,7 +48,7 @@ export let config = {
             additionalSpells: [ // additional spells
                 {
                     name: "kill nearest", // name of the spell
-                    execute: `function(_n) {
+                    execute: `
                         this.enemies.splice(
                             this.enemies
                                 .map((x, i) => [x, i])
@@ -56,7 +56,9 @@ export let config = {
                                     a.position.sub(this.playerPosition).len - b.position.sub(this.playerPosition).len
                                 )[0][1], 1)
                         return false
-                    }`, // quoted execute funcition, run in the context of the Game class. this doesn't get transpiled
+                    `,
+                    // quoted execute funcition, run in the context of the Game class and with the `n` parameter.
+                    // this doesn't get transpiled
                     durability: 2 // durability, same as in Spell
                 }
             ]

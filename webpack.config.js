@@ -17,9 +17,12 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(png|svg|jpg|gif)$/,
+                test: /\.png$/,
                 use: [
-                    'file-loader'
+                    {
+                        loader: 'file-loader',
+                        options: {}
+                    }
                 ]
             }
         ]
@@ -36,5 +39,8 @@ module.exports = {
             ".ts"
         ]
     },
-    entry: "./src/index.ts"
+    entry: [
+        'core-js',
+        "./src/index.ts"
+    ]
 };
