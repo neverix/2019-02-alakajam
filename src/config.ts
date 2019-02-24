@@ -18,8 +18,8 @@ export let config = {
             autocompleteForegroundColor: "#eaeaea" // foreground (text) color of the autocomplete menu
         },
         player: { // player settings
-            size: 22, // picture scale
-            picSize: 1, // size of the original picture
+            size: 40, // player size
+            colliderSize: 40, // collider size
             moveSpeed: 20, // speed (in pixels per frame)
             moveDuration: 3 // length of a move spell (frames)
         },
@@ -27,14 +27,14 @@ export let config = {
             moveSpeed: 10 // speed (in pixels per frame)
         },
         collectibles: { // collectibles settings
-            size: 12, // scale of the picture
-            picSize: 1, // original picture size
+            size: 12, // picture size
+            colliderSize: 12, // collider size
             minNumber: 500, // smallest number of collectibles
             maxNumber: 900 // biggest number of collectibles (inclusive)
         },
         enemies: { // enemy settings
             size: 10, // scale of the picture
-            picSize: 1, // original picture size
+            colliderSize: 10, // collider size
             minNumber: 200, // smallest number of enemies
             maxNumber: 250, // biggest number of enemies
             speed: 3, // speed of each enemy
@@ -44,7 +44,7 @@ export let config = {
             borderEvasionSpeed: 3 // speed with which it evades the borders
         },
         spells: { // spell settings
-            protectionLength: Infinity, // how long the protection ability lasts
+            protectionLength: 100, // how long the protection ability lasts
             additionalSpells: [ // additional spells
                 {
                     name: "kill nearest", // name of the spell
@@ -101,8 +101,8 @@ export type GameConfig = {
         autocompleteForegroundColor: string
     },
     player: {
+        colliderSize: number,
         size: number,
-        picSize: number,
         moveSpeed: number,
         moveDuration: number
     },
@@ -111,13 +111,13 @@ export type GameConfig = {
     },
     collectibles: {
         size: number,
-        picSize: number,
+        colliderSize: number,
         minNumber: number,
         maxNumber: number
     },
     enemies: {
         size: number,
-        picSize: number,
+        colliderSize: number,
         minNumber: number,
         maxNumber: number,
         speed: number,

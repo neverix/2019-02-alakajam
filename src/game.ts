@@ -4,17 +4,6 @@ import Vector from './vector'
 import Collectible from './collectible'
 import Enemy from './enemy'
 
-declare var require: {
-    <T>(path: string): T;
-    (paths: string[], callback: (...modules: any[]) => void): void;
-    ensure: (
-        paths: string[],
-        callback: (require: <T>(path: string) => T) => void
-    ) => void;
-};
-
-let playerBack = require('./pics/player/back.png')
-
 export class Game {
     // game config
     private config: GameConfig
@@ -184,6 +173,12 @@ export class Game {
         }
     }
 
+    private collide(body1: Vector, body2: Vector, body1r: number, body2r: number): boolean {
+        if (body1.sub(body2).len > body1r / 2 + body2r / 2)
+            return true
+        return false
+    }
+
     update() {
         // keys that users are allowed to enter
         let allowedKeys = [
@@ -300,17 +295,21 @@ export class Game {
         })
         // check for collisions with collectibles
         this.collectibles = this.collectibles.filter(collectible => {
-            if (this.playerPosition.sub(collectible.position).len
-                > this.config.player.picSize * this.config.player.size
-                + this.config.collectibles.picSize * this.config.collectibles.size)
+            if (this.collide(
+                this.playerPosition,
+                collectible.position,
+                this.config.player.colliderSize,
+                this.config.collectibles.colliderSize))
                 return true
             this.addSpell(collectible.spell)
         })
         // check for collisions with enemies
         this.enemies = this.enemies.filter(enemy => {
-            if ((this.playerPosition.sub(enemy.position).len
-                > this.config.player.picSize * this.config.player.size
-                + this.config.collectibles.picSize * this.config.collectibles.size)
+            if (this.collide(
+                this.playerPosition,
+                enemy.position,
+                this.config.player.colliderSize,
+                this.config.enemies.colliderSize)
                 || this.isPlayerProtected)
                 return true
             this.gameOver()
@@ -365,14 +364,11 @@ export class Game {
             ctx.beginPath()
         })
         // player
-        ctx.fillStyle = "#9a5bff"
-        ctx.arc(
-            canvas.width / 2 + this.playerPosition.x - this.cameraPosition.x,
-            canvas.height / 2 + this.playerPosition.y - this.cameraPosition.y,
+        ctx.drawImage(playerPics.front,
+            this.playerPosition.x + canvas.width / 2 - this.cameraPosition.x - this.config.player.size / 2,
+            this.playerPosition.y + canvas.height / 2 - this.cameraPosition.y - this.config.player.size / 2,
             this.config.player.size,
-            0,
-            Math.PI * 2)
-        ctx.fill()
+            this.config.player.size)
         // spell
         if (this.textSpell != "") {
             // box
@@ -453,3 +449,22 @@ export class Game {
         this.spell.push(keyCode.key)
     }
 }
+
+// ugly hack, idk how it works
+declare var require: {
+    <T>(path: string): T;
+    (paths: string[], callback: (...modules: any[]) => void): void;
+    ensure: (
+        paths: string[],
+        callback: (require: <T>(path: string) => T) => void
+    ) => void;
+};
+
+// get player pictures
+let playerPicsGen = ["back", "front", "left", "right"]
+let playerPics = {
+    right: new Image(), front: new Image(), left: new Image(), back: new Image()
+}
+playerPicsGen.forEach(picName => {
+    playerPics[picName].src = require(`../pics/player/${picName}.png`)
+})
